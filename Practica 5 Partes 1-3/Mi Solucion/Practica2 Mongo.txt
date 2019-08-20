@@ -1,0 +1,203 @@
+EJERCICIO A
+
+1º)
+
+db.aficiones.find( 
+{ Puntuacion: { $gte : 9 }  } 
+, 
+{ _id:0 , Nombre:1 , Tema:1 , Puntuacion:1 } 
+).pretty()
+
+2º)
+
+db.aficiones.aggregate( [ 
+{ $match: { Puntuacion: { $gte: 9 } } } 
+, 
+{ $group: { _id: "$Tema" , totalGasto: { $sum: "$Precio" } , totalComponentes: { $sum:1 } } } 
+] ).pretty()
+
+3º)
+
+db.aficiones.aggregate( [ 
+{ $match: { Puntuacion: { $in: [10,9,8,7,6,5] } } } ,
+{ $group: { _id: "$Puntuacion" , Componentes: { $push: { Nombre: "$Nombre" , Tema: "$Tema" } } } }  
+] ).pretty()
+
+4º)
+
+db.aficiones.aggregate( [ 
+{ $group: { _id: "$Tema" , Apodos: { $push: "$Apodo" } } } 
+] ).pretty()
+
+EJERCICIO B
+
+db.aficiones.aggregate( 
+{ $project : { _id:0 , Nombre:1 , Apodo:1 , Tema:1 } } , 
+{ $group: { _id: { Nombre: "$Nombre" , Tema: "$Tema" } , Personas: { $addToSet: "$Apodo" } } } , 
+{ $project: { _id:1 , Personas:1 , Distintos: { $size: "$Personas" } } } , 
+{ $match: { Distintos: { $gt:1 } } } 
+).pretty()
+
+EJERCICIO C
+
+db.aficiones.aggregate( 
+{ $project : { _id:0 , Nombre:1 , Apodo:1 , Tema:1 , Puntuacion:1 } } , 
+{ $group: { _id: { Nombre: "$Nombre" , Tema: "$Tema" } , Personas: { $addToSet: { Apodo: "$Apodo" , Puntuacion: "$Puntuacion" } } } } , 
+{ $project: { _id:1 , Personas:1 , Distintos: { $size: "$Personas" } } } , 
+{ $match: { $and: [ { Distintos: { $gt:4 }} , { Distintos: { $lt:9 } } ] } } 
+).pretty()
+
+EJERCICIO D
+
+// Informes
+db.aficiones.aggregate( { $group: { _id: "$Tema" , PuntuacionMedia: { $avg: "$Puntuacion" } , CosteMedio: { $avg: "$Precio" } } } )
+
+// LIKE
+db.aficiones.aggregate( { $match: { Apodo: /u.r/ } } )
+
+// JavaScript
+db.aficiones.find( { $where: "this.Apodo == 'XYZ' && ( this.Puntuacion >= 5.0 && this.Puntuacion <= 8.0 )" } ).pretty()
+db.aficiones.find( { $where: function() { return this.Apodo == 'XYZ' && ( this.Puntuacion >= 5.0 && this.Puntuacion <= 8.0 ); } } ).pretty()
+
+// Plan de ejecucion de una consulta
+db.aficiones.find( { $where: "this.Apodo == 'XYZ' && ( this.Puntuacion >= 5.0 && this.Puntuacion <= 8.0 )" } ).explain("executionStats")
+
+EJERCICIO E
+
+db.aficiones.aggregate( [ { $group: { _id: "$Tema" , Apodos: { $push: "$$ROOT" } } } ] ).pretty()
+
+EJERCICIO F
+
+db.aficiones.find({}).forEach(function(document) { 
+
+	var descuento = 0;
+
+	var precio = document.Precio;
+
+	if(document.Precio == null)
+
+		precio = 0;
+
+	if(document.Precio != null)
+
+		switch(Math.round(document.Puntuacion)) {
+			case 10: descuento = 10; break;
+			case 9:  descuento = 20; break;
+			case 8:  descuento = 30; break;
+			case 7:  descuento = 40; break;
+			case 6:  descuento = 50; break;
+			case 5:  descuento = 60; break;
+			case 4:  descuento = 70; break;
+			case 3:  descuento = 80; break;
+			case 2:  descuento = 90; break;
+			case 1:  descuento = 95; break;
+			// case 0:  descuento = 95; break;
+		}
+
+	if(document.Precio != null && document.Puntuacion < 7) 
+
+		precio -= precio * 0.10;	
+
+	db.aficiones.update( { _id : document._id } , { $set: { Precio : precio , Descuento : descuento } } ); 
+
+})
+
+EJERCICIO G
+
+1º)
+
+db.createCollection("PorNivel")
+
+2º)
+
+db.aficiones.aggregate([ 
+{ $match: { Precio: {$ne:null}, Precio: {$ne:0}, Puntuacion: {$ne:null}, Puntuacion: {$ne:0}, Puntuacion: {$lte:10} , Puntuacion: {$gte:0} } } ,
+{ $project: { _id: "$_id" , calc: { $divide: [ { $multiply: ["$$ROOT.Puntuacion",100] } , "$$ROOT.Precio" ] } , doc: "$$ROOT" } } ,
+{ 
+	
+	$project: {
+		"Intervalo": {
+			$concat: [
+				{ $cond: [ { $gt: ["$calc",75] } , "75 - (+Infinity)" , "" ] } ,
+				{ $cond: [ { $and: [ { $lte: ["$calc",75] } , { $gt: ["$calc",50] } ] } , "74 - 50" , "" ] } ,
+				{ $cond: [ { $and: [ { $lte: ["$calc",50] } , { $gt: ["$calc",25] } ] } , "49 - 25" , "" ] } ,
+				{ $cond: [ { $lte: ["$calc",25] } , "24 - (-Infinity)" , "" ] }
+			]
+	    	},
+		Elemento: { Calidad: "$calc" , Documento: "$doc" } 	
+	}
+
+},
+{ $group: { _id: "$Intervalo" , Componentes: { $push: "$Elemento" } } } ,
+{ $out: "PorNivel" }
+])
+
+3º)
+
+db.PorNivel.find({}).pretty()
+
+4º)
+
+db.PorNivel.aggregate( 
+{ $project: { _id:0 } } , 
+{ $project: { _id:0 } } , 
+{ $unwind: "$Componentes" } , 
+{ $project: { "Componentes.Calidad":1 , "Componentes.Documento.Nombre":1 , "Componentes.Documento.Precio":1 } } ,
+{ $sort: { "Componentes.Documento.Precio":1  } } , 
+{ $limit: 3 } 
+).pretty()
+
+5º)
+
+db.PorNivel.aggregate( 
+{ $unwind: "$Componentes" } ,  
+{ $sort: { "Componentes.Documento.Precio":-1 } } , 
+{ $group: { _id : "$_id" , Componentes: { $push: "$Componentes" } } } 
+).forEach(function(document) { 
+
+	print("Intervalo: " + document._id);
+
+	print("Se eliminaran los siguientes documentos:");
+
+	for( i = 0; i < 3 && document.Componentes.length ; ++i ) {
+
+		printjson(document.Componentes[i].Documento);
+
+		document.Componentes.shift();
+
+		db.PorNivel.update( { _id : document._id } , document );
+
+	}
+
+	print("-----------------------------------------------------------------------");
+
+} )
+
+APARTADO 4
+
+1º)
+
+db.createCollection("superGuai",{capped:true,size:100000,max:5})
+
+2º)
+
+db.PorNivel.aggregate( 
+{ $unwind: "$Componentes" } ,  
+{ $project: { _id:0 , Componente: "$Componentes" } } ,  
+{ $limit: 5 }  
+).forEach(function(document) { 
+
+	db.superGuai.insert(document); 
+
+} )
+
+3º)
+
+db.superGuai.insert({Prueba:"A"})
+db.superGuai.insert({Prueba:"B"})
+db.superGuai.insert({Prueba:"C"})
+
+4º)
+
+db.superGuai.find({}).pretty()
+

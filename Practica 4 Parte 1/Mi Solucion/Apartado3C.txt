@@ -1,0 +1,184 @@
+/*
+CREATE INDEX NOR_IND_PELISACTUAL ON PELISACTUAL(TITULO);
+CREATE INDEX NOR_IND_PELISHISTORICO ON PELISHISTORICO(TITULO);
+ALTER TABLE PELISACTUAL ADD CONSTRAINT PELISACTUAL_PK PRIMARY KEY(ID);
+ALTER TABLE PELISHISTORICO ADD CONSTRAINT PELISHISTORICO_PK PRIMARY KEY(ID);
+*/
+
+/*
+CL SCR
+
+EXPLAIN PLAN INTO plan_table FOR
+SELECT * FROM PELISACTUAL WHERE GENERO ='DRAMA' AND DRAMA > 35;
+
+-- MASCARA PARA CONSULTAR LA TABLA DEL PLAN --
+
+ttitle ' INFORME DEL PLAN  '
+
+col operation   heading 'OPERACION' format a12 word_wrapped
+col options     heading 'OPCIONES' format a12 word_wrapped
+col object_name heading 'TABLA'    format a12 word_wrapped
+col cost        heading 'Coste'    format a5
+col cardinality heading 'Filas'    format a5
+col parent_id   heading 'PADRE'    format a5
+col id          heading 'Id_Fila'  format a5
+
+select operation,options,object_name,cost,cardinality,parent_id,id 
+from plan_table
+connect by prior id=parent_id    -- and statement_id= 'actuaT'
+start with id = 1                -- and statement_id= 'actuaT'
+order by id;
+/
+*/
+/*
+ INFORME DEL PLAN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+OPERACION    OPCIONES     TABLA        Coste Filas PADRE Id_Fi
+------------ ------------ ------------ ----- ----- ----- -----
+TABLE ACCESS BY INDEX     PELISACTUAL      2     1     0     1
+             ROWID                                            
+
+BITMAP       TO ROWIDS                                 1     2
+CONVERSION                                                    
+
+BITMAP INDEX SINGLE VALUE BMP_IND_PELI                 2     3
+                          SACTUAL                             
+*/
+
+-- ***********************************************************************************************
+
+/*
+CL SCR
+
+DELETE plan_table;
+
+EXPLAIN PLAN INTO plan_table FOR
+SELECT TITULO, ROUND(DRAMA) FROM PELISACTUAL WHERE ROUND(DRAMA) = 10;
+
+-- MASCARA PARA CONSULTAR LA TABLA DEL PLAN --
+
+ttitle ' INFORME DEL PLAN  '
+
+col operation   heading 'OPERACION' format a12 word_wrapped
+col options     heading 'OPCIONES' format a12 word_wrapped
+col object_name heading 'TABLA'    format a12 word_wrapped
+col cost        heading 'Coste'    format a5
+col cardinality heading 'Filas'    format a5
+col parent_id   heading 'PADRE'    format a5
+col id          heading 'Id_Fila'  format a5
+
+select operation,options,object_name,cost,cardinality,parent_id,id 
+from plan_table
+connect by prior id=parent_id    -- and statement_id= 'actuaT'
+start with id = 1                -- and statement_id= 'actuaT'
+order by id;
+/
+
+--DROP INDEX FNC_IND_PELISACTUAL;
+
+CREATE INDEX FNC_IND_PELISACTUAL ON PELISACTUAL(ROUND(DRAMA));
+
+DELETE plan_table;
+
+EXPLAIN PLAN INTO plan_table FOR
+SELECT TITULO, ROUND(DRAMA) FROM PELISACTUAL WHERE ROUND(DRAMA) = 10;
+
+-- MASCARA PARA CONSULTAR LA TABLA DEL PLAN --
+
+ttitle ' INFORME DEL PLAN  '
+
+col operation   heading 'OPERACION' format a12 word_wrapped
+col options     heading 'OPCIONES' format a12 word_wrapped
+col object_name heading 'TABLA'    format a12 word_wrapped
+col cost        heading 'Coste'    format a5
+col cardinality heading 'Filas'    format a5
+col parent_id   heading 'PADRE'    format a5
+col id          heading 'Id_Fila'  format a5
+
+select operation,options,object_name,cost,cardinality,parent_id,id 
+from plan_table
+connect by prior id=parent_id    -- and statement_id= 'actuaT'
+start with id = 1                -- and statement_id= 'actuaT'
+order by id;
+/
+*/
+
+/*
+
++++ ANTES DECREAR EL INDICE +++
+
+INFORME DEL PLAN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+OPERACION    OPCIONES     TABLA        Coste Filas PADRE Id_Fi
+------------ ------------ ------------ ----- ----- ----- -----
+TABLE ACCESS FULL         PELISACTUAL     19     1     0     1
+
++++ DESPUES DE CREAR EL INDICE +++
+
+INFORME DEL PLAN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+OPERACION    OPCIONES     TABLA        Coste Filas PADRE Id_Fi
+------------ ------------ ------------ ----- ----- ----- -----
+TABLE ACCESS BY INDEX     PELISACTUAL      2     1     0     1
+             ROWID                                            
+
+INDEX        RANGE SCAN   FNC_IND_PELI     1     1     1     2
+                          SACTUAL                             
+
+*/
+
+-- ***********************************************************************************************
+
+CL SCR
+
+DELETE plan_table;
+
+EXPLAIN PLAN INTO plan_table FOR
+SELECT TITULO, ROUND(DRAMA) FROM PELISACTUAL WHERE ROUND(DRAMA) > 10;
+
+-- MASCARA PARA CONSULTAR LA TABLA DEL PLAN --
+
+ttitle ' INFORME DEL PLAN  '
+
+col operation   heading 'OPERACION' format a12 word_wrapped
+col options     heading 'OPCIONES' format a12 word_wrapped
+col object_name heading 'TABLA'    format a12 word_wrapped
+col cost        heading 'Coste'    format a5
+col cardinality heading 'Filas'    format a5
+col parent_id   heading 'PADRE'    format a5
+col id          heading 'Id_Fila'  format a5
+
+select operation,options,object_name,cost,cardinality,parent_id,id 
+from plan_table
+connect by prior id=parent_id    -- and statement_id= 'actuaT'
+start with id = 1                -- and statement_id= 'actuaT'
+order by id;
+/
+
+/*
+
+EXPLAIN PLAN INTO plan_table FOR
+SELECT TITULO, ROUND(DRAMA) FROM PELISACTUAL WHERE ROUND(DRAMA) > 10;
+
+INFORME DEL PLAN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+OPERACION    OPCIONES     TABLA        Coste Filas PADRE Id_Fi
+------------ ------------ ------------ ----- ----- ----- -----
+TABLE ACCESS FULL         PELISAHORA      19    40     0     1
+
+EXPLAIN PLAN INTO plan_table FOR
+SELECT TITULO, ROUND(DRAMA) FROM PELISACTUAL WHERE ROUND(DRAMA) = 10;
+
+INFORME DEL PLAN                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+OPERACION    OPCIONES     TABLA        Coste Filas PADRE Id_Fi
+------------ ------------ ------------ ----- ----- ----- -----
+TABLE ACCESS BY INDEX     PELISAHORA       2     1     0     1
+             ROWID                                            
+
+INDEX        RANGE SCAN   IDX_PELISAHO     1     1     1     2
+                          RA__FUN_DRAM                        
+                          A                                   
+
+Deducirá que como accede a un conjunto de valores muy grande le
+es lo mismo acceder a toda la tabla que por el índice. Mientras
+que en el segundo caso como el conjunto de valores es reducido,
+podemos mejorar el tiempo de respuesta mediante el acceso a índice.
+
+*/
+

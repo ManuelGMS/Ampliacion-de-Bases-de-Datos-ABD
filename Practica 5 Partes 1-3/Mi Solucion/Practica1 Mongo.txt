@@ -1,0 +1,220 @@
+documento = {
+    Tema:"Meditacion",
+    Apodo:"Yuri",
+    Nombre:"Mindfulness",
+    Puntuacion:8.5,
+    Precio:0,
+    Duracion: {
+        minutosMinimos: 20,
+        minutosMaximos: Infinity
+    },
+    Necesario: [ 
+        { uno: "Reproductor de audio" },
+        { dos: "Lugar relajante" }
+    ]
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Música",
+    Apodo:"Yuri",
+    Nombre:"Mejor que el silencio",
+    Puntuacion:8.1,
+    Precio:10,
+    Genero:"Rap",
+    Discografica:"Universal music",
+    ArtistaPrincipal: "Nach",
+    ArtistasInvitados: [ 
+        { nombre:"Woyza" } , 
+        { nombre:"Abram" } , 
+        { nombre:"El Chojin" } ,
+        { nombre:"Rapsusklei" } ,
+        { nombre:"Ismael Serrano" } ,
+        { nombre:"Inmortal Technique" }
+    ]
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Películas",
+    Apodo:"Yuri",
+    Nombre:"V De Vendetta",
+    Puntuacion:8.35,
+    Precio:5.75,
+    DuracionMinutos: 133,
+    Generos: [ { Genero:"Drama" } , { Genero:"Ficcion" } ],
+    ActoresPrincipales: [ 
+        { Nombre:"Hugo Weaving" } , 
+        { Nombre:"Natalie Portman" } 
+    ] ,
+    ActoresSecundarios: [ 
+        { Nombre:"Stephen Fry" } , 
+        { Nombre:"Jhon Hurt" } , 
+        { Nombre:"Stephen Rea" } ,
+        { Nombre:"Rupert Graves" } ,
+        { Nombre:"Tim Pigott-Smith" }
+    ]
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Películas",
+    Apodo:"Yuri",
+    Nombre:"Harry Potter y el Prisionero de Azkaban",
+    Puntuacion:7.88,
+    Precio:8.15,
+    DuracionMinutos: 142,
+    Generos: [ { Genero:"Fantasía" } , { Genero:"Misterio" } ],
+    ActoresPrincipales: [ 
+        { Nombre:"Daniel Radcliffe" } , 
+        { Nombre:"Emma Watson" } ,
+        { Nombre:"Rupert Grint" }
+    ] ,
+    ActoresSecundarios: [ 
+        { Nombre:"Gary Oldman" } , 
+        { Nombre:"Michael Gambon" } , 
+        { Nombre:"David Lewis" } ,
+        { Nombre:"Alan Rickman" }
+    ]
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Películas",
+    Apodo:"Yuri",
+    Nombre:"El atlas de las nubes",
+    Puntuacion:9.78,
+    Precio:11.8,
+    DuracionMinutos: 172,
+    Generos: [ { Genero:"Dramático" } , { Genero:"Aventura" } ],
+    ActoresPrincipales: [ 
+        { Nombre:"Halle Berry" } ,
+        { Nombre:"Tom Hanks" } ,
+        { Nombre:"Hugo Weaving" } ,
+        { Nombre:"Jim Sturgess" } ,
+        { Nombre:"Bae Doona" } ,
+        { Nombre:"Hugh Grant" } ,
+        { Nombre:"Jim Broadbent" } ,
+        { Nombre:"Susan Sarandon" } ,
+        { Nombre:"Ben Wishaw" } ,
+        { Nombre:"James D'Arcy" } ,
+        { Nombre:"Keith David" } ,
+        { Nombre:"David Gyasi" }
+    ] ,
+    ActoresSecundarios: [ 
+        { Nombre:"Zhou Xun" } , 
+        { Nombre:"Robert Fyte" } , 
+        { Nombre:"Martin Wuttke" } ,
+        { Nombre:"Zhu Zhu" }
+    ]
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Series",
+    Apodo:"Yuri",
+    Nombre:"Sense 8",
+    Puntuacion:9.95,
+    Precio:8.7,
+    Caracteristicas: [
+        { Genero: "Ciencia Ficción" } ,
+        { Director: "Hermanas Wachowski" }
+    ],
+    ValorCalidad:100.00,
+    Descuento:1.75
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Series",
+    Apodo:"Yuri",
+    Nombre:"Umbrella Academy",
+    Puntuacion:8.93,
+    Precio:11.5,
+    Caracteristicas: [
+        { Genero: "Acción" } ,
+        { Director: "Steve Blackman" }
+    ],
+    ValorCalidad:99.30,
+    Descuento:3.21
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Investigación",
+    Apodo:"Yuri",
+    Nombre:"Desarrollo de algitmos de ordenación",
+    Puntuacion:8.21,
+    Precio:0.0,
+    Materia:"Programación",
+    Investigadores: [
+        { Nombre: "Yuri" }
+    ],
+    Requisitos: [
+        { Nombre: "Fundamentos de algoritmia" } ,
+        { Nombre: "Fundamentos de estructuras de datos" }
+    ],
+    Recursos: [
+        { Nombre: "IDE" } ,
+        { Nombre: "Lenguaje de programación C++" }
+    ]
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Investigación",
+    Apodo:"Yuri",
+    Nombre:"Matemáticas en la vida cotidiana",
+    Puntuacion:8.00,
+    Precio:0.0,
+    Materia:"Matemáticas",
+    Investigadores: [
+        { Nombre: "Yuri" }
+    ],
+    Requisitos: [
+        { Nombre: "Fundamentos de cálculo" } ,
+        { Nombre: "Fundamentos de álgebra" }
+    ],
+    Recursos: [
+        { Nombre: "Papel" } ,
+        { Nombre: "Lápiz" }
+    ]
+}
+
+db.aficiones.insert(documento)
+
+documento = {
+    Tema:"Películas",
+    Apodo:"Yuri",
+    Nombre:"Una mente maravillosa",
+    Puntuacion:9.42,
+    Precio:9.54,
+    DuracionMinutos: 140,
+    Generos: [ { Genero:"Dramático" } , { Genero:"Romántico" } ],
+    ActoresPrincipales: [ 
+        { Nombre:"Russel Crowe" } ,
+        { Nombre:"Jennifer Connelly" } ,
+        { Nombre:"Ed Harris" } ,
+        { Nombre:"Paul Bettany" } ,
+        { Nombre:"Adam Goldberg" } ,
+        { Nombre:"Josh Lucas" } ,
+        { Nombre:"Anthony Rapp" }
+    ] ,
+    ActoresSecundarios: [ 
+        { Nombre:"Viven Cardone" } , 
+        { Nombre:"Judd Hirsch" } , 
+        { Nombre:"Austin Pendleton" } ,
+        { Nombre:"Amy Walz" }
+    ]
+}
+
+db.aficiones.insert(documento)
+

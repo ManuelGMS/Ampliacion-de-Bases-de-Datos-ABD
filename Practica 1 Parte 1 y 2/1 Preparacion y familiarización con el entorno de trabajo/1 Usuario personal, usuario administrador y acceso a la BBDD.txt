@@ -1,0 +1,7 @@
+"ABD0321" --> Usuario del puesto.
+"mana" --> Contraseña del usuario.
+
+"ADMINUSER" --> Usuario administrador.
+"USERABD19" --> Contaseña del administrador.
+
+"SVR tania05 - db ABDs" --> Conexion a nuestra BBDD.

@@ -1,0 +1,143 @@
+APARTADO 6
+
+A)
+
+B.1)
+
+db.aficiones.update( { Tema: "MotoGP" } , { $rename: { NombreEquipo: "Nombre" } } , { multi: true } )
+
+B.2)
+
+db.aficiones.find( { $or: [ { Tema: "Fútbol" } , { Tema: "Baloncesto" } ] } ).forEach(
+	
+	function(document) {
+
+		print("Antes: " + document.Precio); 
+
+		while(document.Precio > 1000) 
+
+			document.Precio /= 10;
+
+		print("Despues: " + document.Precio);   
+
+		db.aficiones.update( { _id: document._id } , document );
+
+	}
+
+)
+
+B.3)
+
+db.aficiones.update( { $or: [ { Tema: "MotoGP" } , { Tema: "Ajedrez" } ] } , { $set: { Precio: 100 } } , { multi: true } )
+
+B.4)
+
+db.aficiones.update( { Tema: "MotoGP" } , { $rename: { Puntuacón: "Puntuacion" } } , { multi: true } )
+
+B.5)
+
+db.aficiones.find( { Tema: "Ajedrez" } ).forEach(
+	
+	function(document) {
+
+		var nuevoNombre = document.Nombre + " " + document.Apellidos; 
+
+		db.aficiones.update( { _id: document._id } , { $unset: { Apellidos: "" } } );
+
+		db.aficiones.update( { _id: document._id } , { $set: { Nombre: nuevoNombre } } );
+
+	}
+
+)
+
+C)
+
+db.createCollection("misAficiones", {
+   validator: {
+      $jsonSchema: {
+         bsonType: "object",
+         required: [ "Tema", "Nombre", "Puntuacion" ],
+         properties: {
+            Tema: {
+               bsonType: "string",
+               description: "Nombre de la aficion"
+            },
+            Nombre: {
+               bsonType: "string",
+               description: "Nombre de la actividad dentro de la aficion"
+            },
+            Puntuacion: {
+               bsonType: "double",
+               minimum: 0.0,
+               maximum: 10.0,
+               description: "Un campo decimal entre 0 y 10"
+            },
+            Curso: {
+               enum: [ "Primero", "Segundo", "Tercero", "Cuarto" ],
+               description: "Solo puede ser alguno de los valores posibles"
+            },
+            PeriodoPractica: {
+               bsonType: [ "int" ],
+               minimum: 1960,
+               maximum: 2020,
+               description: "Años entre 1960 y 2020"
+            },
+            "viveEn.Ciudad" : {
+               bsonType: "string",
+               description: "Nombre de ciudad"
+            },
+            "viveEn.Pais" : {
+               bsonType: "string",
+               description: "Nombre de pais"
+            }
+         }
+      }
+   }
+})
+
+D)
+
+"soloDatos" ==> Campos NO obligatorios de las aficiones
+
+"soloAficiones" ==> Campos obligatorios + _id: soloDatos (Con lo que debe quedar en aficiones)
+
+Campos Obligatorios:
+* Tema: sobre lo que es tu Afición. EJ: música, esquí, cine, cocina, futbol
+* Apodo: por privacidad, no uses tu nombre real porque los datos van a ser públicos.
+* Nombre: único del componente. EJ: Nombre equipo, nombre de grupo, título de película o de libro
+* Puntuación: de ese componente según tu gusto (máximo: 10)
+* Precio: lo que cuesta disfrutar de eso. EJ: precio si es un CD, una película, del concierto de un grupo,etc.
+
+db.createCollection("soloDatos")
+
+db.createCollection("soloAficiones")
+
+db.aficiones.aggregate( 
+{ $project: { Obligatorios: "$$ROOT" , Caracteristicas: "$$ROOT" } } ,
+{ $project: { Obligatorios: { Tema: 1, Apodo: 1, Nombre: 1, Puntuacion: 1, Precio: 1, Ref: "$_id" } , Caracteristicas: "$$ROOT.Caracteristicas" } } ,
+{ $project: { _id: 0, Caracteristicas: { Tema: 0, Apodo: 0, Nombre: 0, Puntuacion: 0, Precio: 0 } } }
+).forEach(  
+
+	function(document) {
+
+		db.soloDatos.insert(document.Caracteristicas);
+
+		db.soloAficiones.insert(document.Obligatorios);
+
+	}
+
+)
+
+E)
+
+Tenemos que usar el operador $lookup con el framework de agregacion.
+
+db.soloAficiones.aggregate( { $lookup: { from: "soloDatos" , localField: "Ref" , foreignField: "_id" , as: "Caracteristicas" } } ).pretty()
+
+F)
+
+db.createCollection("reconstruida")
+
+db.soloAficiones.aggregate( { $lookup: { from:"soloDatos", localField:"Ref", foreignField:"_id", as:"Caracteristicas" } } , { $out: "reconstruida" } )
+
+
